@@ -17,7 +17,7 @@ class DenyService: AccessibilityService() {
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
-        TODO("Not yet implemented")
+        Log.e(tag, event?.packageName.toString())
     }
 
 }

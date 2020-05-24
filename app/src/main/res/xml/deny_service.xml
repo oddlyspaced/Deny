@@ -1,6 +1,8 @@
 <accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
     android:accessibilityFeedbackType="feedbackGeneric"
-    android:accessibilityFlags="flagDefault"
+    android:accessibilityEventTypes="typeAllMask"
+    android:accessibilityFlags="flagReportViewIds"
     android:canPerformGestures="true"
     android:description="@string/service_description"
-    android:canRetrieveWindowContent="true"/>
+    android:canRetrieveWindowContent="true"
+    android:packageNames="com.google.android.packageinstaller, com.android.settings, com.android.packageinstaller,,com.google.android.permissioncontroller,com.android.permissioncontroller"/>

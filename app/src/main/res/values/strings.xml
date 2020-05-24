@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Deny</string>
+    <string name="service_description">Test Service</string>
 </resources>

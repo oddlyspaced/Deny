@@ -7,6 +7,7 @@ import android.net.Uri
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
+import androidx.core.graphics.scaleMatrix
 import java.lang.Exception
 
 
@@ -17,7 +18,7 @@ class DenyService : AccessibilityService() {
     override fun onServiceConnected() {
         Log.d(tag, "Service Connected")
 
-        val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+        var intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
         intent.data = (Uri.parse("package:com.whatsapp"))
         intent.flags = FLAG_ACTIVITY_NEW_TASK
         startActivity(intent)
@@ -30,14 +31,37 @@ class DenyService : AccessibilityService() {
     }
 
     var currentScreen = -1
-    var perms = arrayOf("Call logs", "Camera", "Contacts", "Location", "Microphone", "SMS", "Telephone", "Storage")
+    var perms = arrayOf(
+        "Call logs",
+        "Camera",
+        "Contacts",
+        "Location",
+        "Microphone",
+        "SMS",
+        "Telephone",
+        "Storage"
+    )
     private var permcounter = 0
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
-        if (event != null) {
+        if (event != null && event.source != null) {
             if (event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
                 try {
                     if (currentScreen == -1) {
+                        event.source.refresh()
+                        val res = event.source.findAccessibilityNodeInfosByText("App permissions")[0].parent
+                        res.performAction(AccessibilityNodeInfo.ACTION_CLICK)
+                        currentScreen = 1
+                    }
+                    else if (currentScreen == 1) {
+                        for (p in perms) {
+                            val perm = event.source.findAccessibilityNodeInfosByText(p)[0].parent
+                            perm.performAction(AccessibilityNodeInfo.ACTION_CLICK)
+                        }
+                        performGlobalAction(GLOBAL_ACTION_BACK)
+                    }
+
+                    /*if (currentScreen == -1) {
                         // app info screen
                         val res =
                             event.source.findAccessibilityNodeInfosByText("Permissions")[0].parent
@@ -62,10 +86,10 @@ class DenyService : AccessibilityService() {
                         deny.performAction(AccessibilityNodeInfo.ACTION_CLICK)
                         performGlobalAction(GLOBAL_ACTION_BACK)
                         currentScreen = 0
-                    }
-                }
-                catch (e: Exception) {
-                    Log.e("Hit", "or miss")
+                    }*/
+                } catch (e: Exception) {
+                    Log.e("error", e.toString())
+                    print(e.stackTrace)
                 }
             }
         }

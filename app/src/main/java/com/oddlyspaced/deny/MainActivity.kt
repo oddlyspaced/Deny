@@ -2,7 +2,6 @@ package com.oddlyspaced.deny
 
 import android.content.pm.PackageManager
 import android.graphics.drawable.Animatable
-import android.graphics.drawable.AnimatedVectorDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
@@ -18,11 +17,11 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        //getPackageList()
-        animate()
+        animateIcon()
+        setupOnTouch()
     }
 
-    private fun animate() {
+    private fun animateIcon() {
         Handler().postDelayed({
             if (animCounter == animations.size)
                 animCounter = 0
@@ -31,8 +30,14 @@ class MainActivity : AppCompatActivity() {
             imgAnimMain.setImageDrawable(avd)
             val animatable = imgAnimMain.drawable as Animatable
             animatable.start()
-            animate()
+            animateIcon()
         }, 1000)
+    }
+
+    private fun setupOnTouch() {
+        viewAccessibiltyTouch.setOnClickListener {
+
+        }
     }
 
     private fun getPackageList() {

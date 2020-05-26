@@ -34,7 +34,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginEnd="24dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="24dp"
         android:text="Deny automatically grants permissions to apps when you open them and revokes them as soon as you leave it."
         android:textColor="@color/colorText"
         app:layout_constraintBottom_toTopOf="@+id/textView"

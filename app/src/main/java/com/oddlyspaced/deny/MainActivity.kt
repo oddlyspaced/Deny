@@ -1,5 +1,6 @@
 package com.oddlyspaced.deny
 
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.drawable.Animatable
 import androidx.appcompat.app.AppCompatActivity
@@ -36,7 +37,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupOnTouch() {
         viewAccessibiltyTouch.setOnClickListener {
-
+            startActivity(Intent(this, TabbedActivity::class.java))
         }
     }
 

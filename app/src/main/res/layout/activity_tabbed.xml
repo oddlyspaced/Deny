@@ -28,6 +28,7 @@
         app:layout_constraintTop_toBottomOf="@+id/viewPager"
         app:tabBackground="@color/colorPrimaryLight"
         app:tabIndicatorColor="@color/colorPrimary"
+        app:tabMode="auto"
         app:tabSelectedTextColor="@color/colorAccent"
         app:tabTextColor="@color/colorText" />
 

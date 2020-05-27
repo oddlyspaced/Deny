@@ -7,16 +7,24 @@ import kotlinx.android.synthetic.main.activity_tabbed.*
 
 class TabbedActivity : AppCompatActivity() {
 
+    private val tabNames = arrayOf("Activity", "Manage", "Settings", "Help")
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_tabbed)
 
-        val adapter = TabbedAdapter(this, 5)
+        // layouts should be
+        // log
+        // manage apps
+        // settings
+        // help
+        // maybe ~ about
+        val adapter = TabbedAdapter(this, 4)
         viewPager.adapter = adapter
 
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
             //To get the first name of doppelganger celebrities
-            tab.text = position.toString()
+            tab.text = tabNames[position]
         }.attach()
     }
 }

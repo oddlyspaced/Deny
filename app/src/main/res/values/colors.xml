@@ -6,4 +6,7 @@
     <color name="colorAccent">#22d1ee</color>
     <color name="colorText">#dedede</color>
     <color name="colorSeparator">#e2f3f5</color>
+    <color name="colorYellow">#f3f169</color>
+    <color name="colorGreen">#17b978</color>
+    <color name="colorRed">#ff304f</color>
 </resources>

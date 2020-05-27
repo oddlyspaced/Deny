@@ -13,7 +13,7 @@ class TabbedAdapter(activity: AppCompatActivity, val totalItems: Int): FragmentS
 
     override fun createFragment(position: Int): Fragment {
         if (position == 0)
-            return ActivityFragment.getInstance(position)
+            return LogFragment.getInstance(position)
         return ItemFragment.getInstance(position)
     }
 

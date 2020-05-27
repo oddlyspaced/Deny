@@ -12,11 +12,11 @@ class ItemFragment: Fragment() {
     companion object {
         const val ARG_POSITION = "position"
         fun getInstance(position: Int): Fragment {
-            val doppelgangerFragment = ItemFragment()
+            val fragment = ItemFragment()
             val bundle = Bundle()
             bundle.putInt(ARG_POSITION, position)
-            doppelgangerFragment.arguments = bundle
-            return doppelgangerFragment
+            fragment.arguments = bundle
+            return fragment
         }
     }
 

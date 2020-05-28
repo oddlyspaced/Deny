@@ -31,7 +31,7 @@ class LogFragment: Fragment() {
         list.add(LogItem(0, "", "Today", 0))
         list.add(LogItem(1, "com.instagram.android", "12:03 AM", 9))
         list.add(LogItem(2, "com.whatsapp", "12:34 AM", 10))
-        list.add(LogItem(3, "com.spotify.music", "6:54: PM", 2))
+        list.add(LogItem(2, "com.spotify.music", "6:54 PM", 2))
         val adapter = LogAdapter(list, context!!)
         rvLog.layoutManager = LinearLayoutManager(context)
         rvLog.adapter = adapter

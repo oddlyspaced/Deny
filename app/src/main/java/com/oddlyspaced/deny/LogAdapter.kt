@@ -37,8 +37,7 @@ class LogAdapter(private val list: ArrayList<LogItem>, private val context: Cont
 
         when (item.status) {
             1 -> holder.status.setBackgroundColor(context.getColor(R.color.colorGreen)) // granted
-            2 -> holder.status.setBackgroundColor(context.getColor(R.color.colorRed)) // denied
-            3 -> holder.status.setBackgroundColor(context.getColor(R.color.colorYellow)) // revoked
+            2 -> holder.status.setBackgroundColor(context.getColor(R.color.colorRed)) // revoked
         }
 
         val dr = RoundedBitmapDrawableFactory.create(context.resources, pkgManager.getPackageInfo(item.packageName).applicationInfo.loadIcon(context.packageManager).toBitmap())
@@ -47,8 +46,7 @@ class LogAdapter(private val list: ArrayList<LogItem>, private val context: Cont
 
         var logText = when (item.status) {
             1 -> "Granted:"
-            2 -> "Denied:"
-            3 -> "Revoked:"
+            2 -> "Revoked:"
             else -> ""
         }
         logText = when (item.permission) {
@@ -65,7 +63,7 @@ class LogAdapter(private val list: ArrayList<LogItem>, private val context: Cont
             11 -> "$logText Telephone"
             else -> ""
         }
-        logText = if (item.status == 3)
+        logText = if (item.status == 2)
             "$logText from ${pkgManager.getPackageInfo(item.packageName).applicationInfo.loadLabel(context.packageManager)}"
         else
             "$logText to ${pkgManager.getPackageInfo(item.packageName).applicationInfo.loadLabel(context.packageManager)}"

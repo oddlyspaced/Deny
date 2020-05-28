@@ -30,6 +30,8 @@ class LogFragment: Fragment() {
         val logManager = LogManager(context!!)
         val adapter = LogAdapter(logManager.readLog(), context!!)
         rvLog.layoutManager = LinearLayoutManager(context)
+        rvLog.setHasFixedSize(true)
+        rvLog.setItemViewCacheSize(15)
         rvLog.adapter = adapter
     }
 }

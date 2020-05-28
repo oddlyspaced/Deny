@@ -92,10 +92,23 @@ class DenyService : AccessibilityService() {
         val pendingIntent: PendingIntent = PendingIntent.getActivity(this, 0, intent, 0)
 
         val builder = NotificationCompat.Builder(this, notificationChannelId)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(when(permission) {
+                PackageListManager.GROUP_BODY_SENSORS -> R.drawable.ic_perm_body_sensors
+                PackageListManager.GROUP_CALENDAR -> R.drawable.ic_perm_calendar
+                PackageListManager.GROUP_CALL_LOGS -> R.drawable.ic_perm_call_logs
+                PackageListManager.GROUP_CAMERA -> R.drawable.ic_perm_camera
+                PackageListManager.GROUP_CONTACTS -> R.drawable.ic_perm_contacts
+                PackageListManager.GROUP_LOCATION -> R.drawable.ic_perm_location
+                PackageListManager.GROUP_MICROPHONE -> R.drawable.ic_perm_mic
+                PackageListManager.GROUP_PHYSICAL_ACTIVITY -> R.drawable.ic_perm_physical_activity
+                PackageListManager.GROUP_SMS -> R.drawable.ic_perm_sms
+                PackageListManager.GROUP_STORAGE -> R.drawable.ic_perm_storage
+                PackageListManager.GROUP_TELEPHONE -> R.drawable.ic_perm_telephone
+                else -> R.drawable.ic_launcher_foreground
+            })
             .setContentTitle(pkgManager.getPermGroupName(permission))
-            .setContentText("TEXT")
-            .setPriority(NotificationCompat.PRIORITY_MIN)
+            .setContentText(pkgManager.getPackageInfo(packageInContext).applicationInfo.loadLabel(applicationContext.packageManager).toString() + " was granted " + pkgManager.getPermGroupName(permission))
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
             // Set the intent that will fire when the user taps the notification
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)

@@ -13,7 +13,8 @@ class LogManager(private val context: Context) {
         // time should be hour:minutes ampm
         // date should be day:month
         val calendar = Calendar.getInstance()
-        val time = "${calendar.get(Calendar.HOUR)}:${calendar.get(Calendar.MINUTE)} ${when(calendar.get(Calendar.AM_PM)) {
+
+        val time = "${String.format("%02d", calendar.get(Calendar.HOUR))}:${String.format("%02d", calendar.get(Calendar.MINUTE))} ${when(calendar.get(Calendar.AM_PM)) {
             0 -> "AM"
             1 -> "PM"
             else -> "" 
@@ -31,7 +32,8 @@ class LogManager(private val context: Context) {
             list.add(LogItem(tokenizer.nextToken().toInt(), tokenizer.nextToken(), tokenizer.nextToken(), tokenizer.nextToken().toInt()))
         }
         reader.close()
-        return readLog()
+        list.reverse()
+        return list
     }
 
 

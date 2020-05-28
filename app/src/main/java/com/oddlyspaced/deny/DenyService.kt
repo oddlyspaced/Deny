@@ -76,7 +76,7 @@ class DenyService : AccessibilityService() {
                 Log.e("Error", e.toString())
             }
             checkPerms()
-        }, 3000)
+        }, 500)
     }
 
     private fun createNotificationChannel() {

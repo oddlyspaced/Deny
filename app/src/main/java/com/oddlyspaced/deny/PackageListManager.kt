@@ -47,7 +47,6 @@ class PackageListManager(private val context: Context) {
         val perms = (context.packageManager.getPackageInfo(packageName, PackageManager.GET_PERMISSIONS))
         val listPermission = getPermissions(packageName)
         val grantedPermissions = ArrayList<String>()
-        Log.e("size", listPermission.size.toString())
         for (perm in listPermission) {
             if ((perms.requestedPermissionsFlags[perms.requestedPermissions.indexOf(perm)] and PackageInfo.REQUESTED_PERMISSION_GRANTED) != 0) {
                 grantedPermissions.add(perm)

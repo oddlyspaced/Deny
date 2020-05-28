@@ -20,7 +20,6 @@ class PackageListManager(private val context: Context) {
     private val permTelephone = arrayListOf("android.permission.ANSWER_PHONE_CALLS", "android.permission.CALL_PHONE", "android.permission.READ_PHONE_STATE", "android.permission.USE_SIP")
     private val all = permBodySensor + permCalendar + permCallLogs + permCamera + permContacts + permLocation + permMic + permActivityRecognition + permSMS + permStorage + permTelephone
 
-
     fun getPackageList(): ArrayList<PackageInfo> {
         return ArrayList(context.packageManager.getInstalledPackages(0))
     }
@@ -69,7 +68,24 @@ class PackageListManager(private val context: Context) {
         }
     }
 
-    companion object {
+    fun getPermGroupName(permission: Int): String {
+        return when(permission) {
+            GROUP_BODY_SENSORS -> "Body Sensors"
+            GROUP_CALENDAR -> "Calendar"
+            GROUP_CALL_LOGS -> "Call Logs"
+            GROUP_CAMERA -> "Camera"
+            GROUP_CONTACTS -> "Contacts"
+            GROUP_LOCATION -> "Location"
+            GROUP_MICROPHONE -> "Microphone"
+            GROUP_PHYSICAL_ACTIVITY -> "Physical Activity"
+            GROUP_SMS -> "SMS"
+            GROUP_STORAGE -> "Storage"
+            GROUP_TELEPHONE -> "Telephone"
+            else -> ""
+        }
+    }
+
+    companion object Constants {
         const val GROUP_BODY_SENSORS = 1
         const val GROUP_CALENDAR = 2
         const val GROUP_CALL_LOGS = 3

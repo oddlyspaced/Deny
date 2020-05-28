@@ -1,4 +1,4 @@
-package com.oddlyspaced.deny
+package com.oddlyspaced.deny.adapter
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -7,11 +7,12 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.graphics.drawable.RoundedBitmapDrawable
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import androidx.core.graphics.drawable.toBitmap
 import androidx.recyclerview.widget.RecyclerView
-import kotlin.math.log
+import com.oddlyspaced.deny.modal.LogItem
+import com.oddlyspaced.deny.util.PackageListManager
+import com.oddlyspaced.deny.R
 
 class LogAdapter(private val list: ArrayList<LogItem>, private val context: Context, private val click: ItemClick): RecyclerView.Adapter<LogAdapter.ViewHolder>() {
 

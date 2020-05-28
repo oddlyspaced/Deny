@@ -1,8 +1,10 @@
-package com.oddlyspaced.deny
+package com.oddlyspaced.deny.adapter
 
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.oddlyspaced.deny.fragment.ItemFragment
+import com.oddlyspaced.deny.fragment.LogFragment
 
 
 class TabbedAdapter(activity: AppCompatActivity, val totalItems: Int): FragmentStateAdapter(activity) {

@@ -1,4 +1,4 @@
-package com.oddlyspaced.deny
+package com.oddlyspaced.deny.fragment
 
 import android.content.Context
 import android.os.Bundle
@@ -8,6 +8,9 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.oddlyspaced.deny.util.LogManager
+import com.oddlyspaced.deny.R
+import com.oddlyspaced.deny.adapter.LogAdapter
 import kotlinx.android.synthetic.main.fragment_log.*
 
 class LogFragment: Fragment() {
@@ -30,7 +33,11 @@ class LogFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         //val position = requireArguments().getInt(ARG_POSITION)
         val logManager = LogManager(context!!)
-        val adapter = LogAdapter(logManager.readLog(), context!!, AdapterItemClick())
+        val adapter = LogAdapter(
+            logManager.readLog(),
+            context!!,
+            AdapterItemClick()
+        )
         rvLog.layoutManager = LinearLayoutManager(context)
         rvLog.setHasFixedSize(true)
         rvLog.setItemViewCacheSize(15)

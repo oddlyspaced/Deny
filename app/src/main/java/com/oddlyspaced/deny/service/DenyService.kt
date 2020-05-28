@@ -1,23 +1,18 @@
-package com.oddlyspaced.deny
+package com.oddlyspaced.deny.service
 
 import android.accessibilityservice.AccessibilityService
-import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent
 import android.content.Context
-import android.content.Intent
-import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
-import android.net.Uri
 import android.os.Handler
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
-import android.view.accessibility.AccessibilityNodeInfo
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.graphics.scaleMatrix
+import com.oddlyspaced.deny.util.LogManager
+import com.oddlyspaced.deny.util.PackageListManager
+import com.oddlyspaced.deny.R
 import java.lang.Exception
-import kotlin.random.Random
 
 
 class DenyService : AccessibilityService() {
@@ -37,7 +32,8 @@ class DenyService : AccessibilityService() {
 
     override fun onServiceConnected() {
         Log.d(tag, "Service Connected")
-        pkgManager = PackageListManager(applicationContext)
+        pkgManager =
+            PackageListManager(applicationContext)
         logManager = LogManager(applicationContext)
         createNotificationChannel()
     }

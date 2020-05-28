@@ -1,4 +1,4 @@
-package com.oddlyspaced.deny
+package com.oddlyspaced.deny.util
 
 import android.content.Context
 import android.content.pm.PackageInfo

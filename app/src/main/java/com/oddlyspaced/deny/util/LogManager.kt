@@ -1,6 +1,7 @@
-package com.oddlyspaced.deny
+package com.oddlyspaced.deny.util
 
 import android.content.Context
+import com.oddlyspaced.deny.modal.LogItem
 import java.io.*
 import java.util.*
 import kotlin.collections.ArrayList
@@ -29,7 +30,14 @@ class LogManager(private val context: Context) {
         val reader = BufferedReader(FileReader(File(context.getExternalFilesDir(null).toString() + "/activitylog")))
         for (line in reader.readLines()) {
             val tokenizer = StringTokenizer(line, ";")
-            list.add(LogItem(tokenizer.nextToken().toInt(), tokenizer.nextToken(), tokenizer.nextToken(), tokenizer.nextToken().toInt()))
+            list.add(
+                LogItem(
+                    tokenizer.nextToken().toInt(),
+                    tokenizer.nextToken(),
+                    tokenizer.nextToken(),
+                    tokenizer.nextToken().toInt()
+                )
+            )
         }
         reader.close()
         list.reverse()

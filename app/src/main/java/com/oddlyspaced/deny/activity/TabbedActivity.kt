@@ -1,8 +1,10 @@
-package com.oddlyspaced.deny
+package com.oddlyspaced.deny.activity
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.google.android.material.tabs.TabLayoutMediator
+import com.oddlyspaced.deny.R
+import com.oddlyspaced.deny.adapter.TabbedAdapter
 import kotlinx.android.synthetic.main.activity_tabbed.*
 
 class TabbedActivity : AppCompatActivity() {

@@ -34,6 +34,9 @@ class PackageListManager(private val context: Context) {
 
     fun getPermissions(packageName: String): ArrayList<String> {
         val perms = (context.packageManager.getPackageInfo(packageName, PackageManager.GET_PERMISSIONS))
+        if (perms.requestedPermissions == null) {
+            return ArrayList()
+        }
         val allPermissions = perms.requestedPermissions.toList()
         val remainingPermissions = allPermissions.subtract(all)
         return ArrayList(allPermissions.subtract(remainingPermissions).toList())

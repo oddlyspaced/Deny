@@ -1,8 +1,11 @@
 package com.oddlyspaced.deny
 
 import android.content.Intent
+import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
+import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.graphics.drawable.Animatable
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
@@ -18,8 +21,14 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        var intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+        intent.data = (Uri.parse("package:com.oddlyspaced.deny"))
+        intent.flags = FLAG_ACTIVITY_NEW_TASK
+        startActivity(intent)
         animateIcon()
         setupOnTouch()
+        getPackageList()
     }
 
     private fun animateIcon() {
@@ -42,12 +51,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getPackageList() {
-        val packageManage = packageManager.getInstalledPackages(0)
-        Log.e("packages", packageManage.toString())
 
-        val perms = packageManager.getPackageInfo("com.instagram.android", PackageManager.GET_PERMISSIONS)
-        for (perm in perms.requestedPermissions) {
-            Log.e("eeee", perm.toString())
-        }
+        val pkgManager = PackageListManager(this)
+
+        pkgManager.getGrantedPermissions("com.instagram.android")
+
+        //for (pkg in pkgManager.getPackageList())
+          //  Log.e("pack", pkg.applicationInfo.loadLabel(packageManager).toString())
+
+
+        //val perms = packageManager.getPackageInfo("com.whatsapp", PackageManager.GET_PERMISSIONS)
+        /*for (counter in 0 until perms.requestedPermissions.size) {
+            if ((perms.requestedPermissionsFlags[counter] and PackageInfo.REQUESTED_PERMISSION_GRANTED) != 0) {
+                Log.e("perm", perms.requestedPermissions[counter])
+            }
+            //Log.e("eeee", perm.toString())
+        }*/
+        //Log.e("sss", packageManager.queryPermissionsByGroup("android.permission-group.ACTIVITY_RECOGNITION", 0).toString())
     }
 }

@@ -1,15 +1,10 @@
 package com.oddlyspaced.deny
 
 import android.content.Intent
-import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
-import android.content.pm.PackageInfo
-import android.content.pm.PackageManager
 import android.graphics.drawable.Animatable
-import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
-import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -69,4 +64,5 @@ class MainActivity : AppCompatActivity() {
         }*/
         //Log.e("sss", packageManager.queryPermissionsByGroup("android.permission-group.ACTIVITY_RECOGNITION", 0).toString())
     }
+
 }

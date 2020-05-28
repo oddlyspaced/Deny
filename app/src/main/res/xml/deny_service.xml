@@ -4,5 +4,4 @@
     android:accessibilityFlags="flagReportViewIds"
     android:canPerformGestures="true"
     android:description="@string/service_description"
-    android:canRetrieveWindowContent="true"
-    android:packageNames="com.google.android.packageinstaller, com.android.settings, com.android.packageinstaller,,com.google.android.permissioncontroller,com.android.permissioncontroller, com.xiaomi.providers.appindex, com.miui.securitycenter"/>
+    android:canRetrieveWindowContent="true"/>

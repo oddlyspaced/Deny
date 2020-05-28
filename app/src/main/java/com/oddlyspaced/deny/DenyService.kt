@@ -25,7 +25,15 @@ class DenyService : AccessibilityService() {
 
     private val tag = "DenyService"
     private lateinit var pkgManager: PackageListManager
-    private val whitelistedPackages = arrayListOf("com.android.systemui", "com.google.android.packageinstaller", "com.android.settings", "com.android.packageinstaller", "com.google.android.permissioncontroller", "com.android.permissioncontroller")
+    private val whitelistedPackages = arrayListOf(
+        "com.android.systemui",
+        "com.google.android.packageinstaller",
+        "com.android.settings",
+        "com.android.packageinstaller",
+        "com.google.android.permissioncontroller",
+        "com.android.permissioncontroller"
+    )
+
     override fun onServiceConnected() {
         Log.d(tag, "Service Connected")
         pkgManager = PackageListManager(applicationContext)
@@ -51,18 +59,14 @@ class DenyService : AccessibilityService() {
 
     private fun checkPerms() {
         Handler().postDelayed({
-            Log.e("conteeeeee", packageInContext)
             try {
                 val pp = pkgManager.getGrantedPermissions(packageInContext)
                 if (pp != grantedPermissions) {
                     val diff = pp.subtract(grantedPermissions).toList()[0]
-                    Log.e("DIFFERENT", diff)
                     createNotification(pkgManager.checkPermGroup(diff))
                     grantedPermissions = pp
-                    Log.e("pp", pp.toString())
                 }
-            }
-            catch (e: Exception) {
+            } catch (e: Exception) {
                 Log.e("Error", e.toString())
             }
             checkPerms()

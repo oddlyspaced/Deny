@@ -22,10 +22,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        var intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+        /*var intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
         intent.data = (Uri.parse("package:com.oddlyspaced.deny"))
         intent.flags = FLAG_ACTIVITY_NEW_TASK
-        startActivity(intent)
+        startActivity(intent)*/
         animateIcon()
         setupOnTouch()
         getPackageList()

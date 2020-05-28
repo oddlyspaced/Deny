@@ -25,6 +25,7 @@ class DenyService : AccessibilityService() {
     private val notificationChannelId = "111"
     private val tag = "DenyService"
     private lateinit var pkgManager: PackageListManager
+    private lateinit var logManager: LogManager
     private val whitelistedPackages = arrayListOf(
         "com.android.systemui",
         "com.google.android.packageinstaller",
@@ -37,6 +38,7 @@ class DenyService : AccessibilityService() {
     override fun onServiceConnected() {
         Log.d(tag, "Service Connected")
         pkgManager = PackageListManager(applicationContext)
+        logManager = LogManager(applicationContext)
         createNotificationChannel()
     }
 
@@ -62,11 +64,12 @@ class DenyService : AccessibilityService() {
         Handler().postDelayed({
             try {
                 val pp = pkgManager.getGrantedPermissions(packageInContext)
-                //Log.e("pppp", pp.toString())
                 if (pp != grantedPermissions) {
                     Log.e("diff", pp.subtract(grantedPermissions).toString())
                     val diff = pp.subtract(grantedPermissions).toList()[0]
-                    createNotification(pkgManager.checkPermGroup(diff))
+                    val permGroup = pkgManager.checkPermGroup(diff)
+                    createNotification(permGroup)
+                    logManager.addLog(1, packageInContext, permGroup)
                     grantedPermissions = pp
                 }
             } catch (e: Exception) {
@@ -89,7 +92,6 @@ class DenyService : AccessibilityService() {
     }
 
     private fun createNotification(permission: Int) {
-
         val builder = NotificationCompat.Builder(this, notificationChannelId)
             .setSmallIcon(when(permission) {
                 PackageListManager.GROUP_BODY_SENSORS -> R.drawable.ic_perm_body_sensors

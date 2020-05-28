@@ -13,7 +13,7 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.recyclerview.widget.RecyclerView
 import kotlin.math.log
 
-class LogAdapter(private val list: ArrayList<LogItem>, private val context: Context): RecyclerView.Adapter<LogAdapter.ViewHolder>() {
+class LogAdapter(private val list: ArrayList<LogItem>, private val context: Context, private val click: ItemClick): RecyclerView.Adapter<LogAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_log, parent, false)
@@ -84,6 +84,10 @@ class LogAdapter(private val list: ArrayList<LogItem>, private val context: Cont
             11 -> holder.imgPerm.setImageDrawable(context.getDrawable(R.drawable.ic_perm_telephone))
         }
 
+        holder.imgPerm.setOnClickListener {
+            click.onClick(context)
+        }
+
         holder.permTime.text = item.time
 
     }
@@ -98,35 +102,8 @@ class LogAdapter(private val list: ArrayList<LogItem>, private val context: Cont
         val container: ConstraintLayout = itemView.findViewById(R.id.consPermission)
     }
 
+    interface ItemClick {
+        fun onClick(ctx: Context)
+    }
+
 }
-
-/*
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = list[position]
-        holder.state.text = item.state
-        holder.active.text = getFormatted(item.active)
-        holder.confirmed.text = getFormatted(item.confirmed)
-        holder.inc.text = when(item.confirmedInc) {
-            0 -> ""
-            else -> "↑${getFormatted(item.confirmedInc)}"
-        }
-
-        if (position%2 == 0) {
-            setLightBg(holder.cardState)
-            setLightBg(holder.cardConfirmed)
-            setLightBg(holder.cardActive)
-        }
-
-    }
-
-    class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
-        val cardState: CardView = itemView.findViewById(R.id.cvState)
-        val cardConfirmed: CardView = itemView.findViewById(R.id.cvConfirmed)
-        val cardActive: CardView = itemView.findViewById(R.id.cvActive)
-        val state: TextView = itemView.findViewById(R.id.txState)
-        val confirmed: TextView = itemView.findViewById(R.id.txConfirmed)
-        val inc: TextView = itemView.findViewById(R.id.txConfirmedInc)
-        val active: TextView = itemView.findViewById(R.id.txActive)
-    }
-
- */

@@ -1,6 +1,7 @@
 package com.oddlyspaced.deny
 
 import android.accessibilityservice.AccessibilityService
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -21,8 +22,7 @@ import kotlin.random.Random
 
 class DenyService : AccessibilityService() {
 
-    private val notificationChannelId = "10001"
-
+    private val notificationChannelId = "111"
     private val tag = "DenyService"
     private lateinit var pkgManager: PackageListManager
     private val whitelistedPackages = arrayListOf(
@@ -50,7 +50,7 @@ class DenyService : AccessibilityService() {
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         if (event?.packageName == null)
             return
-        if (event.packageName.toString() != packageInContext && !whitelistedPackages.contains(event.packageName.toString())) {
+        if (event.packageName.toString() != packageInContext && !whitelistedPackages.contains(event.packageName.toString()) && event.packageName.toString() != applicationContext.packageName) {
             packageInContext = event.packageName.toString()
             grantedPermissions = pkgManager.getGrantedPermissions(packageInContext)
             checkPerms()
@@ -58,10 +58,13 @@ class DenyService : AccessibilityService() {
     }
 
     private fun checkPerms() {
+        //Log.e("called", "called")
         Handler().postDelayed({
             try {
                 val pp = pkgManager.getGrantedPermissions(packageInContext)
+                //Log.e("pppp", pp.toString())
                 if (pp != grantedPermissions) {
+                    Log.e("diff", pp.subtract(grantedPermissions).toString())
                     val diff = pp.subtract(grantedPermissions).toList()[0]
                     createNotification(pkgManager.checkPermGroup(diff))
                     grantedPermissions = pp
@@ -70,7 +73,7 @@ class DenyService : AccessibilityService() {
                 Log.e("Error", e.toString())
             }
             checkPerms()
-        }, 100)
+        }, 3000)
     }
 
     private fun createNotificationChannel() {
@@ -86,10 +89,6 @@ class DenyService : AccessibilityService() {
     }
 
     private fun createNotification(permission: Int) {
-        val intent = Intent(this, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        }
-        val pendingIntent: PendingIntent = PendingIntent.getActivity(this, 0, intent, 0)
 
         val builder = NotificationCompat.Builder(this, notificationChannelId)
             .setSmallIcon(when(permission) {
@@ -106,11 +105,10 @@ class DenyService : AccessibilityService() {
                 PackageListManager.GROUP_TELEPHONE -> R.drawable.ic_perm_telephone
                 else -> R.drawable.ic_launcher_foreground
             })
-            .setContentTitle(pkgManager.getPermGroupName(permission))
-            .setContentText(pkgManager.getPackageInfo(packageInContext).applicationInfo.loadLabel(applicationContext.packageManager).toString() + " was granted " + pkgManager.getPermGroupName(permission))
+            .setContentTitle(pkgManager.getPermGroupName(permission) + " Granted")
+            .setContentText(pkgManager.getPermGroupName(permission))
+            .setStyle(NotificationCompat.BigTextStyle().bigText(pkgManager.getPackageInfo(packageInContext).applicationInfo.loadLabel(applicationContext.packageManager).toString() + " was granted " + pkgManager.getPermGroupName(permission)))
             .setPriority(NotificationCompat.PRIORITY_HIGH)
-            // Set the intent that will fire when the user taps the notification
-            .setContentIntent(pendingIntent)
             .setAutoCancel(true)
             .setWhen(System.currentTimeMillis())
 

@@ -13,8 +13,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.oddlyspaced.deny.modal.LogItem
 import com.oddlyspaced.deny.util.PackageListManager
 import com.oddlyspaced.deny.R
+import com.oddlyspaced.deny.interfaces.LogItemClick
 
-class LogAdapter(private val list: ArrayList<LogItem>, private val context: Context, private val click: ItemClick): RecyclerView.Adapter<LogAdapter.ViewHolder>() {
+class LogAdapter(private val list: ArrayList<LogItem>, private val context: Context, private val click: LogItemClick): RecyclerView.Adapter<LogAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_log, parent, false)
@@ -86,7 +87,7 @@ class LogAdapter(private val list: ArrayList<LogItem>, private val context: Cont
         }
 
         holder.imgPerm.setOnClickListener {
-            click.onClick(context)
+            click.onClick(context, item.packageName)
         }
 
         holder.permTime.text = item.time
@@ -101,10 +102,6 @@ class LogAdapter(private val list: ArrayList<LogItem>, private val context: Cont
         val imgPerm: ImageView = itemView.findViewById(R.id.imgPermission)
         val logDate: TextView = itemView.findViewById(R.id.txLogDate)
         val container: ConstraintLayout = itemView.findViewById(R.id.consPermission)
-    }
-
-    interface ItemClick {
-        fun onClick(ctx: Context)
     }
 
 }

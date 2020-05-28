@@ -1,16 +1,22 @@
 package com.oddlyspaced.deny.fragment
 
 import android.content.Context
+import android.content.Intent
+import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.content.ContextCompat.startActivity
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.oddlyspaced.deny.util.LogManager
 import com.oddlyspaced.deny.R
 import com.oddlyspaced.deny.adapter.LogAdapter
+import com.oddlyspaced.deny.interfaces.LogItemClick
 import kotlinx.android.synthetic.main.fragment_log.*
 
 class LogFragment: Fragment() {
@@ -44,9 +50,12 @@ class LogFragment: Fragment() {
         rvLog.adapter = adapter
     }
 
-    class AdapterItemClick: LogAdapter.ItemClick {
-        override fun onClick(ctx: Context) {
-            Toast.makeText(ctx, "o0o0o0", Toast.LENGTH_LONG).show()
+    class AdapterItemClick: LogItemClick {
+        override fun onClick(context: Context, packageName: String) {
+            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+            intent.data = (Uri.parse("package:$packageName"))
+            intent.flags = FLAG_ACTIVITY_NEW_TASK
+            context.startActivity(intent)
         }
     }
 }

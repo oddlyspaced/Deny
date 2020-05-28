@@ -4,9 +4,11 @@ import android.content.Intent
 import android.graphics.drawable.Animatable
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import kotlinx.android.synthetic.main.activity_main.*
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -23,7 +25,8 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)*/
         animateIcon()
         setupOnTouch()
-        getPackageList()
+        Log.e("time", Calendar.getInstance().get(Calendar.HOUR).toString())
+        //getPackageList()
     }
 
     private fun animateIcon() {

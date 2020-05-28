@@ -13,7 +13,11 @@ class LogManager(private val context: Context) {
         // time should be hour:minutes ampm
         // date should be day:month
         val calendar = Calendar.getInstance()
-        val time = "${calendar.get(Calendar.HOUR)}:${calendar.get(Calendar.MINUTE)} ${calendar.get(Calendar.AM_PM)}"
+        val time = "${calendar.get(Calendar.HOUR)}:${calendar.get(Calendar.MINUTE)} ${when(calendar.get(Calendar.AM_PM)) {
+            0 -> "AM"
+            1 -> "PM"
+            else -> "" 
+        }}"
         val date = "${calendar.get(Calendar.DAY_OF_MONTH)} ${calendar.get(Calendar.DAY_OF_WEEK_IN_MONTH)}"
         writer.println("$status;$packageName;$time;$permission;$date")
         writer.close()

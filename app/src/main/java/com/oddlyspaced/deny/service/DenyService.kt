@@ -1,6 +1,7 @@
 package com.oddlyspaced.deny.service
 
 import android.accessibilityservice.AccessibilityService
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
@@ -11,6 +12,7 @@ import android.os.Handler
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
+import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.oddlyspaced.deny.util.LogManager
@@ -51,9 +53,13 @@ class DenyService : AccessibilityService() {
     private var permissionsToRevoke = ArrayList<String>()
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
-        //Log.e("ttt", packageInContext)
+        // Log.e("ttt", packageInContext)
         if (event?.packageName == null)
             return
+        // ignore notification and toast
+        if (event.parcelableData is Notification || event.parcelableData is Toast)
+            return
+
         if (whitelistedPackages.contains(event.packageName.toString())) {
             // revoke perms
             if (!isPermissionBeingRevoked) {

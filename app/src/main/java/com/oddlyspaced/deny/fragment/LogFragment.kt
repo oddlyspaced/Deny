@@ -87,7 +87,7 @@ addPhotoBottomDialogFragment.show(getSupportFragmentManager(),
 
         override fun onClick(fragmentManager: FragmentManager, packageName: String) {
             val frag = PermissionBottomFragment().newInstance()
-            frag.show(fragmentManager, "TAAAAg")
+            frag.show(fragmentManager, packageName)
         }
     }
 
@@ -100,7 +100,6 @@ addPhotoBottomDialogFragment.show(getSupportFragmentManager(),
                 " $tx."
             }
             txLoading.text = tx
-            Log.e("ccc", "calsdsds")
             if (asyncLoader.isLoading)
                 animateLoading()
         }, 250)

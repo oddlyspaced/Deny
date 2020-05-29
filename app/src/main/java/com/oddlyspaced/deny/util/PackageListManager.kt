@@ -19,6 +19,7 @@ class PackageListManager(private val context: Context) {
     private val permStorage = arrayListOf("android.permission.ACCESS_MEDIA_LOCATION", "android.permission.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE")
     private val permTelephone = arrayListOf("android.permission.ANSWER_PHONE_CALLS", "android.permission.CALL_PHONE", "android.permission.READ_PHONE_STATE", "android.permission.USE_SIP")
     private val all = permBodySensor + permCalendar + permCallLogs + permCamera + permContacts + permLocation + permMic + permActivityRecognition + permSMS + permStorage + permTelephone
+    private val groups = arrayListOf("body sensor", "calendar", "call logs", "camera", "contacts", "location", "microphone", "physical activity", "sms", "storage", "telephone")
 
     fun getPackageList(): ArrayList<PackageInfo> {
         return ArrayList(context.packageManager.getInstalledPackages(0))
@@ -64,6 +65,10 @@ class PackageListManager(private val context: Context) {
                 listPermissions.add(grp)
         }
         return listPermissions
+    }
+
+    fun checkGroupNumber(group: String): Int {
+        return groups.indexOf(group.toLowerCase())+1
     }
 
     fun checkPermGroup(permission: String): Int {

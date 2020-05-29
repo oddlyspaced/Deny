@@ -35,7 +35,7 @@ class PermissionBottomFragment: BottomSheetDialogFragment() {
         list.add(PermissionItem("Body Activity", 1))
         list.add(PermissionItem("Body Activity", 1))
         rvPermissions.setHasFixedSize(true)
-        rvPermissions.layoutManager = LinearLayoutManager(context3)
+        rvPermissions.layoutManager = LinearLayoutManager(context)
         rvPermissions.adapter = AppPermissionAdapter(list)
     }
 }

@@ -9,13 +9,14 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import androidx.core.graphics.drawable.toBitmap
+import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
 import com.oddlyspaced.deny.modal.LogItem
 import com.oddlyspaced.deny.util.PackageListManager
 import com.oddlyspaced.deny.R
 import com.oddlyspaced.deny.interfaces.LogItemClick
 
-class LogAdapter(private val list: ArrayList<LogItem>, private val click: LogItemClick): RecyclerView.Adapter<LogAdapter.ViewHolder>() {
+class LogAdapter(private val fragmentManager: FragmentManager, private val list: ArrayList<LogItem>, private val click: LogItemClick): RecyclerView.Adapter<LogAdapter.ViewHolder>() {
 
     private lateinit var context: Context
 
@@ -88,7 +89,7 @@ class LogAdapter(private val list: ArrayList<LogItem>, private val click: LogIte
         }
 
         holder.imgPerm.setOnClickListener {
-            click.onClick(context, item.packageName)
+            click.onClick(fragmentManager, item.packageName)
         }
 
         holder.permTime.text = item.time

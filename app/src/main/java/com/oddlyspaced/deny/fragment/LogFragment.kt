@@ -19,6 +19,7 @@ import androidx.core.content.ContextCompat.startActivity
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.oddlyspaced.deny.util.LogManager
@@ -56,13 +57,13 @@ class LogFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         //val position = requireArguments().getInt(ARG_POSITION)
         animateLoading()
-        asyncLoader = AsyncLoader(context!!, rvLog)
+        asyncLoader = AsyncLoader(context!!, rvLog, fragmentManager!!)
         asyncLoader.execute()
     }
 
     class AdapterItemClick: LogItemClick {
-        override fun onClick(context: Context, packageName: String) {
-            val writer = PrintWriter(BufferedWriter(FileWriter(File(context.getExternalFilesDir(null).toString() + "/revokeperms"))))
+        //override fun onClick(fragmentManager: FragmentManager: Context, packageName: String) {
+            /*val writer = PrintWriter(BufferedWriter(FileWriter(File(context.getExternalFilesDir(null).toString() + "/revokeperms"))))
             val pkgManager = PackageListManager(context)
             writer.println(packageName)
             for (perm in pkgManager.getGrantedGroups(packageName)) {
@@ -72,7 +73,21 @@ class LogFragment: Fragment() {
             val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
             intent.data = (Uri.parse("package:$packageName"))
             intent.flags = FLAG_ACTIVITY_NEW_TASK
-            context.startActivity(intent)
+            context.startActivity(intent)*/
+
+            //frag.show(fragmentManager, "rrr")
+
+            /*
+            AddPhotoBottomDialogFragment addPhotoBottomDialogFragment =
+        AddPhotoBottomDialogFragment.newInstance();
+addPhotoBottomDialogFragment.show(getSupportFragmentManager(),
+        "add_photo_dialog_fragment");
+             */
+     //   }
+
+        override fun onClick(fragmentManager: FragmentManager, packageName: String) {
+            val frag = PermissionBottomFragment().newInstance()
+            frag.show(fragmentManager, "TAAAAg")
         }
     }
 
@@ -92,7 +107,7 @@ class LogFragment: Fragment() {
     }
 
 
-    class AsyncLoader(private val context: Context, private val recyclerView: RecyclerView): AsyncTask<Void, Void, Void>() {
+    class AsyncLoader(private val context: Context, private val recyclerView: RecyclerView, private val fragmentManager: FragmentManager): AsyncTask<Void, Void, Void>() {
 
         private lateinit var logManager: LogManager
         private lateinit var pkgManager: PackageListManager
@@ -111,6 +126,7 @@ class LogFragment: Fragment() {
                 list.add(item)
             }
             adapter = LogAdapter(
+                fragmentManager,
                 list,
                 AdapterItemClick()
             )

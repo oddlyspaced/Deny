@@ -61,7 +61,7 @@ class LogFragment: Fragment() {
         )
         rvLog.layoutManager = LinearLayoutManager(context)
         rvLog.setHasFixedSize(true)
-        rvLog.setItemViewCacheSize(20)
+        rvLog.setItemViewCacheSize(300)
         rvLog.adapter = adapter
     }
 

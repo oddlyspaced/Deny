@@ -46,7 +46,6 @@ class LogFragment: Fragment() {
         val logManager = LogManager(context!!)
         val adapter = LogAdapter(
             logManager.readLog(),
-            context!!,
             AdapterItemClick()
         )
         rvLog.layoutManager = LinearLayoutManager(context)

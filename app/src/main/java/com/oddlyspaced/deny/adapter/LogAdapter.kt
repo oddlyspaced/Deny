@@ -15,9 +15,12 @@ import com.oddlyspaced.deny.util.PackageListManager
 import com.oddlyspaced.deny.R
 import com.oddlyspaced.deny.interfaces.LogItemClick
 
-class LogAdapter(private val list: ArrayList<LogItem>, private val context: Context, private val click: LogItemClick): RecyclerView.Adapter<LogAdapter.ViewHolder>() {
+class LogAdapter(private val list: ArrayList<LogItem>, private val click: LogItemClick): RecyclerView.Adapter<LogAdapter.ViewHolder>() {
+
+    private lateinit var context: Context
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        context = parent.context
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_log, parent, false)
         return ViewHolder(view)
     }

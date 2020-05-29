@@ -11,12 +11,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat.startActivity
+import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
+import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.oddlyspaced.deny.util.LogManager
 import com.oddlyspaced.deny.R
 import com.oddlyspaced.deny.adapter.LogAdapter
 import com.oddlyspaced.deny.interfaces.LogItemClick
+import com.oddlyspaced.deny.modal.LogItem
 import com.oddlyspaced.deny.util.PackageListManager
 import kotlinx.android.synthetic.main.fragment_log.*
 import java.io.BufferedWriter
@@ -44,8 +47,16 @@ class LogFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         //val position = requireArguments().getInt(ARG_POSITION)
         val logManager = LogManager(context!!)
+        val pkgManager = PackageListManager(context!!)
+        val list = ArrayList<LogItem>()
+        for (item in logManager.readLog()) {
+            val dr = RoundedBitmapDrawableFactory.create(resources, pkgManager.getPackageInfo(item.packageName).applicationInfo.loadIcon(context!!.packageManager).toBitmap())
+            dr.cornerRadius = 10.0F
+            item.icon = dr
+            list.add(item)
+        }
         val adapter = LogAdapter(
-            logManager.readLog(),
+            list,
             AdapterItemClick()
         )
         rvLog.layoutManager = LinearLayoutManager(context)

@@ -45,9 +45,7 @@ class LogAdapter(private val list: ArrayList<LogItem>, private val click: LogIte
             2 -> holder.status.setBackgroundColor(context.getColor(R.color.colorRed)) // revoked
         }
 
-        val dr = RoundedBitmapDrawableFactory.create(context.resources, pkgManager.getPackageInfo(item.packageName).applicationInfo.loadIcon(context.packageManager).toBitmap())
-        dr.cornerRadius = 10.0F
-        holder.iconApp.setImageDrawable(dr)
+        holder.iconApp.setImageDrawable(item.icon)
 
         var logText = when (item.status) {
             1 -> "Granted:"

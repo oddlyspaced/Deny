@@ -22,9 +22,21 @@
         android:id="@+id/consPermission"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txLogDate">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/viewLogTouch"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:elevation="1dp"
+            android:foreground="?attr/selectableItemBackground"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <View
             android:id="@+id/viewPermStatus"
@@ -87,6 +99,7 @@
             android:text="3:04 AM"
             android:textColor="@color/colorText"
             android:textSize="12sp"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/imgPermission"
             app:layout_constraintStart_toEndOf="@+id/imgPackageIcon"

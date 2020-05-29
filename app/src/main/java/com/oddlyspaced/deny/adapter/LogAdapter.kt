@@ -88,7 +88,7 @@ class LogAdapter(private val fragmentManager: FragmentManager, private val list:
             11 -> holder.imgPerm.setImageDrawable(context.getDrawable(R.drawable.ic_perm_telephone))
         }
 
-        holder.imgPerm.setOnClickListener {
+        holder.touch.setOnClickListener {
             click.onClick(fragmentManager, item.packageName)
         }
 
@@ -104,6 +104,7 @@ class LogAdapter(private val fragmentManager: FragmentManager, private val list:
         val imgPerm: ImageView = itemView.findViewById(R.id.imgPermission)
         val logDate: TextView = itemView.findViewById(R.id.txLogDate)
         val container: ConstraintLayout = itemView.findViewById(R.id.consPermission)
+        val touch: View = itemView.findViewById(R.id.viewLogTouch)
     }
 
 }

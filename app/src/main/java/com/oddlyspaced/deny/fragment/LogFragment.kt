@@ -117,7 +117,6 @@ addPhotoBottomDialogFragment.show(getSupportFragmentManager(),
             val list = ArrayList<LogItem>()
             pkgManager = PackageListManager(context)
             logManager = LogManager(context)
-            Looper.prepare()
             for (item in logManager.readLog()) {
                 val dr = RoundedBitmapDrawableFactory.create(context.resources, pkgManager.getPackageInfo(item.packageName).applicationInfo.loadIcon(context!!.packageManager).toBitmap())
                 dr.cornerRadius = 10.0F

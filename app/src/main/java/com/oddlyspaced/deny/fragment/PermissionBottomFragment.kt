@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
+import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -33,6 +35,11 @@ class PermissionBottomFragment: BottomSheetDialogFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        pkgManager = PackageListManager(context!!)
+        txPermissionAppName.text = pkgManager.getPackageInfo(packageName).applicationInfo.loadLabel(context!!.packageManager).toString().toUpperCase()
+        val dr = RoundedBitmapDrawableFactory.create(context!!.resources, pkgManager.getPackageInfo(packageName).applicationInfo.loadIcon(context!!.packageManager).toBitmap())
+        dr.cornerRadius = 10.0F
+        imgPermissionIcon.setImageDrawable(dr)
         pkgManager = PackageListManager(context!!)
         val list = ArrayList<PermissionItem>()
         for (item in pkgManager.getGroups(packageName)) {

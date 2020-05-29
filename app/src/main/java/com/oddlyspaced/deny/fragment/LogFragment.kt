@@ -59,6 +59,7 @@ class LogFragment: Fragment() {
         override fun onClick(context: Context, packageName: String) {
             val writer = PrintWriter(BufferedWriter(FileWriter(File(context.getExternalFilesDir(null).toString() + "/revokeperms"))))
             val pkgManager = PackageListManager(context)
+            writer.println(packageName)
             for (perm in pkgManager.getGrantedGroups(packageName)) {
                 writer.println(perm)
             }

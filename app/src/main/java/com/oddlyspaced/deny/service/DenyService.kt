@@ -51,6 +51,7 @@ class DenyService : AccessibilityService() {
     private var grantedPermissions = ArrayList<String>()
     private var isPermissionBeingRevoked = false
     private var permissionsToRevoke = ArrayList<String>()
+    private var packageRevoked = ""
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         // Log.e("ttt", packageInContext)
@@ -82,7 +83,10 @@ class DenyService : AccessibilityService() {
         val permFile = File(applicationContext.getExternalFilesDir(null).toString() + "/revokeperms")
         if (permFile.exists()) {
             val reader = BufferedReader(FileReader(permFile))
-            for (line in reader.lines())
+            val lines = ArrayList(reader.readLines())
+            packageRevoked = lines[0]
+            lines.removeAt(0)
+            for (line in lines)
                 permissionsToRevoke.add(line)
             return true
         }
@@ -116,6 +120,7 @@ class DenyService : AccessibilityService() {
                         item.performAction(AccessibilityNodeInfo.ACTION_CLICK)
                         isOnPermissionListScreen = false
                         isOnPermissionScreen = true
+                        logManager.addLog(2, packageRevoked, pkgManager.checkGroupNumber(permissionsToRevoke[0]))
                         permissionsToRevoke.removeAt(0)
                     }
                 }

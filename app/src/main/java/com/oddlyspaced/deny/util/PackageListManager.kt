@@ -56,6 +56,17 @@ class PackageListManager(private val context: Context) {
         return grantedPermissions
     }
 
+    fun getGroups(packageName: String): ArrayList<String> {
+        val perms = getPermissions(packageName)
+        val listPermissions = ArrayList<String>()
+        for (perm in perms) {
+            val grp = getPermGroupName(checkPermGroup(perm))
+            if (!listPermissions.contains(grp))
+                listPermissions.add(grp)
+        }
+        return listPermissions
+    }
+
     fun getGrantedGroups(packageName: String): ArrayList<String> {
         val perms = getGrantedPermissions(packageName)
         val listPermissions = ArrayList<String>()

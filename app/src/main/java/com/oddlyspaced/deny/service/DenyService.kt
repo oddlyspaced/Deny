@@ -62,6 +62,8 @@ class DenyService : AccessibilityService() {
         if (event.parcelableData is Notification || event.parcelableData is Toast)
             return
         if (shouldExit) {
+            Log.e("EXYE", "EEEEE")
+            event.source.refresh()
             performGlobalAction(GLOBAL_ACTION_BACK)
             shouldExit = false
             return
@@ -102,7 +104,6 @@ class DenyService : AccessibilityService() {
     private var isOnMainScreen = true
     private var isOnPermissionListScreen = false
     private var isOnPermissionScreen = false
-    private var exitSettings = false
 
     private fun revokePermissions(event: AccessibilityEvent) {
         try {
@@ -139,7 +140,6 @@ class DenyService : AccessibilityService() {
                     performGlobalAction(GLOBAL_ACTION_BACK)
                     isPermissionBeingRevoked = false
                     isOnMainScreen = true
-                    exitSettings = true
                     shouldExit = true
                 }
             }

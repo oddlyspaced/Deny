@@ -17,7 +17,12 @@ import com.oddlyspaced.deny.util.LogManager
 import com.oddlyspaced.deny.R
 import com.oddlyspaced.deny.adapter.LogAdapter
 import com.oddlyspaced.deny.interfaces.LogItemClick
+import com.oddlyspaced.deny.util.PackageListManager
 import kotlinx.android.synthetic.main.fragment_log.*
+import java.io.BufferedWriter
+import java.io.File
+import java.io.FileWriter
+import java.io.PrintWriter
 
 class LogFragment: Fragment() {
 
@@ -52,6 +57,12 @@ class LogFragment: Fragment() {
 
     class AdapterItemClick: LogItemClick {
         override fun onClick(context: Context, packageName: String) {
+            val writer = PrintWriter(BufferedWriter(FileWriter(File(context.getExternalFilesDir(null).toString() + "/revokeperms"))))
+            val pkgManager = PackageListManager(context)
+            for (perm in pkgManager.getGrantedGroups(packageName)) {
+                writer.println(perm)
+            }
+            writer.close()
             val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
             intent.data = (Uri.parse("package:$packageName"))
             intent.flags = FLAG_ACTIVITY_NEW_TASK

@@ -4,14 +4,19 @@ import android.accessibilityservice.AccessibilityService
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import android.content.Intent
+import android.content.Intent.ACTION_MAIN
+import android.content.pm.PackageManager
 import android.os.Handler
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
+import android.view.accessibility.AccessibilityNodeInfo
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.oddlyspaced.deny.util.LogManager
 import com.oddlyspaced.deny.util.PackageListManager
 import com.oddlyspaced.deny.R
+import java.io.*
 import java.lang.Exception
 
 
@@ -21,21 +26,19 @@ class DenyService : AccessibilityService() {
     private val tag = "DenyService"
     private lateinit var pkgManager: PackageListManager
     private lateinit var logManager: LogManager
-    private val whitelistedPackages = arrayListOf(
-        "com.android.systemui",
-        "com.google.android.packageinstaller",
-        "com.android.settings",
-        "com.android.packageinstaller",
-        "com.google.android.permissioncontroller",
-        "com.android.permissioncontroller"
-    )
+    private val whitelistedPackages = arrayListOf("com.android.systemui", "com.google.android.packageinstaller", "com.android.settings", "com.android.packageinstaller", "com.google.android.permissioncontroller", "com.android.permissioncontroller")
 
     override fun onServiceConnected() {
         Log.d(tag, "Service Connected")
-        pkgManager =
-            PackageListManager(applicationContext)
+        pkgManager = PackageListManager(applicationContext)
         logManager = LogManager(applicationContext)
         createNotificationChannel()
+        // add launcher to ignore list
+        val intent = Intent(ACTION_MAIN)
+        intent.addCategory(Intent.CATEGORY_HOME);
+        val resolveInfo = packageManager.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY)
+        val currentLauncherPackage= resolveInfo?.activityInfo?.packageName
+        whitelistedPackages.add(currentLauncherPackage!!)
     }
 
     override fun onInterrupt() {
@@ -44,14 +47,98 @@ class DenyService : AccessibilityService() {
 
     private var packageInContext = ""
     private var grantedPermissions = ArrayList<String>()
+    private var isPermissionBeingRevoked = false
+    private var permissionsToRevoke = ArrayList<String>()
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
+        //Log.e("ttt", packageInContext)
         if (event?.packageName == null)
             return
-        if (event.packageName.toString() != packageInContext && !whitelistedPackages.contains(event.packageName.toString()) && event.packageName.toString() != applicationContext.packageName) {
+        if (whitelistedPackages.contains(event.packageName.toString())) {
+            // revoke perms
+            if (!isPermissionBeingRevoked) {
+                isPermissionBeingRevoked = checkForRevoking()
+            }
+            if (event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED && isPermissionBeingRevoked && event.source != null) {
+                Log.e("rec", "REVOKe")
+                event.source.refresh()
+                revokePermissions(event)
+            }
+        }
+        else if (event.packageName.toString() != packageInContext && !whitelistedPackages.contains(event.packageName.toString()) && event.packageName.toString() != applicationContext.packageName) {
             packageInContext = event.packageName.toString()
             grantedPermissions = pkgManager.getGrantedPermissions(packageInContext)
             checkPerms()
+        }
+    }
+
+    private fun checkForRevoking(): Boolean {
+        val permFile = File(applicationContext.getExternalFilesDir(null).toString() + "/revokeperms")
+        if (permFile.exists()) {
+            val reader = BufferedReader(FileReader(permFile))
+            for (line in reader.lines())
+                permissionsToRevoke.add(line)
+            return true
+        }
+        return false
+    }
+
+    private var isOnMainScreen = true
+    private var isOnPermissionListScreen = false
+    private var isOnPermissionScreen = false
+    private var exitSettings = false
+
+    private fun revokePermissions(event: AccessibilityEvent) {
+        try {
+            if (isOnMainScreen) {
+                Log.e("OK", "WHY THO")
+                val checkItem = event.source.findAccessibilityNodeInfosByText("Permissions")
+                if (checkItem.size > 0) {
+                    val item = checkItem[0].parent
+                    item.performAction(AccessibilityNodeInfo.ACTION_CLICK)
+                    isOnMainScreen = false
+                    isOnPermissionListScreen = true
+                    //return
+                }
+            }
+            else if (isOnPermissionListScreen) {
+                if (permissionsToRevoke.size > 0) {
+                    Log.e("OK", "WEIRd")
+                    val checkItem = event.source.findAccessibilityNodeInfosByText(permissionsToRevoke[0])
+                    if (checkItem.size > 0) {
+                        val item = checkItem[0].parent
+                        item.performAction(AccessibilityNodeInfo.ACTION_CLICK)
+                        isOnPermissionListScreen = false
+                        isOnPermissionScreen = true
+                        permissionsToRevoke.removeAt(0)
+                    }
+                }
+                else {
+                    // all permissions revoked
+                    val permFile = File(applicationContext.getExternalFilesDir(null).toString() + "/revokeperms")
+                    permFile.delete()
+                    performGlobalAction(GLOBAL_ACTION_BACK)
+                    isPermissionBeingRevoked = false
+                    isOnMainScreen = true
+                    exitSettings = true
+                }
+            }
+            else if (isOnPermissionScreen) {
+                Log.e("OK", "OK")
+                val checkItem = event.source.findAccessibilityNodeInfosByText("Deny")
+                if (checkItem.size > 0) {
+                    Log.e("DENY", checkItem.size.toString())
+                    val item = checkItem[0]
+                    item.performAction(AccessibilityNodeInfo.ACTION_CLICK)
+                    performGlobalAction(GLOBAL_ACTION_BACK)
+                    isOnPermissionListScreen = true
+                    isOnPermissionScreen = false
+                }
+
+            }
+        }
+        catch (e: Exception) {
+            Log.e("ssss", e.toString())
         }
     }
 

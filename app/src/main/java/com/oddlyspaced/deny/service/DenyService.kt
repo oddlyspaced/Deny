@@ -52,6 +52,7 @@ class DenyService : AccessibilityService() {
     private var isPermissionBeingRevoked = false
     private var permissionsToRevoke = ArrayList<String>()
     private var packageRevoked = ""
+    private var shouldExit = false
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         // Log.e("ttt", packageInContext)
@@ -60,7 +61,11 @@ class DenyService : AccessibilityService() {
         // ignore notification and toast
         if (event.parcelableData is Notification || event.parcelableData is Toast)
             return
-
+        if (shouldExit) {
+            performGlobalAction(GLOBAL_ACTION_BACK)
+            shouldExit = false
+            return
+        }
         if (whitelistedPackages.contains(event.packageName.toString())) {
             // revoke perms
             if (!isPermissionBeingRevoked) {
@@ -88,6 +93,7 @@ class DenyService : AccessibilityService() {
             lines.removeAt(0)
             for (line in lines)
                 permissionsToRevoke.add(line)
+            Log.e("TTTt", permissionsToRevoke.toString())
             return true
         }
         return false
@@ -116,7 +122,9 @@ class DenyService : AccessibilityService() {
                     Log.e("OK", "WEIRd")
                     val checkItem = event.source.findAccessibilityNodeInfosByText(permissionsToRevoke[0])
                     if (checkItem.size > 0) {
+                        Log.e("OK", "CLICK")
                         val item = checkItem[0].parent
+                        Log.e("ITEM", checkItem[0].parent.toString())
                         item.performAction(AccessibilityNodeInfo.ACTION_CLICK)
                         isOnPermissionListScreen = false
                         isOnPermissionScreen = true
@@ -132,6 +140,7 @@ class DenyService : AccessibilityService() {
                     isPermissionBeingRevoked = false
                     isOnMainScreen = true
                     exitSettings = true
+                    shouldExit = true
                 }
             }
             else if (isOnPermissionScreen) {

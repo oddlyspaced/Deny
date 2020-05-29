@@ -4,17 +4,23 @@ import android.content.Context
 import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.net.Uri
+import android.os.AsyncTask
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.oddlyspaced.deny.util.LogManager
 import com.oddlyspaced.deny.R
 import com.oddlyspaced.deny.adapter.LogAdapter
@@ -26,6 +32,7 @@ import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
 import java.io.PrintWriter
+import kotlin.math.log
 
 class LogFragment: Fragment() {
 
@@ -44,25 +51,13 @@ class LogFragment: Fragment() {
         return inflater.inflate(R.layout.fragment_log, container, false)
     }
 
+    private lateinit var asyncLoader: AsyncLoader
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         //val position = requireArguments().getInt(ARG_POSITION)
-        val logManager = LogManager(context!!)
-        val pkgManager = PackageListManager(context!!)
-        val list = ArrayList<LogItem>()
-        for (item in logManager.readLog()) {
-            val dr = RoundedBitmapDrawableFactory.create(resources, pkgManager.getPackageInfo(item.packageName).applicationInfo.loadIcon(context!!.packageManager).toBitmap())
-            dr.cornerRadius = 10.0F
-            item.icon = dr
-            list.add(item)
-        }
-        val adapter = LogAdapter(
-            list,
-            AdapterItemClick()
-        )
-        rvLog.layoutManager = LinearLayoutManager(context)
-        rvLog.setHasFixedSize(true)
-        rvLog.setItemViewCacheSize(300)
-        rvLog.adapter = adapter
+        animateLoading()
+        asyncLoader = AsyncLoader(context!!, rvLog)
+        asyncLoader.execute()
     }
 
     class AdapterItemClick: LogItemClick {
@@ -78,6 +73,56 @@ class LogFragment: Fragment() {
             intent.data = (Uri.parse("package:$packageName"))
             intent.flags = FLAG_ACTIVITY_NEW_TASK
             context.startActivity(intent)
+        }
+    }
+
+    private fun animateLoading() {
+        Handler().postDelayed({
+            var tx = txLoading.text
+            tx = if (tx.length == 13) {
+                "Loading"
+            } else {
+                " $tx."
+            }
+            txLoading.text = tx
+            Log.e("ccc", "calsdsds")
+            if (asyncLoader.isLoading)
+                animateLoading()
+        }, 250)
+    }
+
+
+    class AsyncLoader(private val context: Context, private val recyclerView: RecyclerView): AsyncTask<Void, Void, Void>() {
+
+        private lateinit var logManager: LogManager
+        private lateinit var pkgManager: PackageListManager
+        private lateinit var adapter: LogAdapter
+        var isLoading = true
+
+        override fun doInBackground(vararg params: Void?): Void? {
+            val list = ArrayList<LogItem>()
+            pkgManager = PackageListManager(context)
+            logManager = LogManager(context)
+            Looper.prepare()
+            for (item in logManager.readLog()) {
+                val dr = RoundedBitmapDrawableFactory.create(context.resources, pkgManager.getPackageInfo(item.packageName).applicationInfo.loadIcon(context!!.packageManager).toBitmap())
+                dr.cornerRadius = 10.0F
+                item.icon = dr
+                list.add(item)
+            }
+            adapter = LogAdapter(
+                list,
+                AdapterItemClick()
+            )
+            return null
+        }
+
+        override fun onPostExecute(result: Void?) {
+            isLoading = false
+            recyclerView.layoutManager = LinearLayoutManager(context)
+            recyclerView.setHasFixedSize(true)
+            recyclerView.setItemViewCacheSize(300)
+            recyclerView.adapter = adapter
         }
     }
 }

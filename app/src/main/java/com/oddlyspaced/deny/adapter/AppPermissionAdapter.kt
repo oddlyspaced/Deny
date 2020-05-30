@@ -8,15 +8,8 @@ import android.widget.CheckBox
 import android.widget.CompoundButton
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
-import androidx.core.graphics.drawable.toBitmap
-import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
-import com.oddlyspaced.deny.modal.LogItem
-import com.oddlyspaced.deny.util.PackageListManager
 import com.oddlyspaced.deny.R
-import com.oddlyspaced.deny.interfaces.LogItemClick
 import com.oddlyspaced.deny.modal.PermissionItem
 import com.oddlyspaced.deny.util.AppStatusManager
 

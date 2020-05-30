@@ -32,15 +32,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        /*var intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-        intent.data = (Uri.parse("package:com.oddlyspaced.deny"))
-        intent.flags = FLAG_ACTIVITY_NEW_TASK
-        startActivity(intent)*/
         animateIcon()
         setupOnTouch()
         Log.e("time", Calendar.getInstance().get(Calendar.HOUR).toString())
-        //getPackageList()
     }
 
     private fun animateIcon() {
@@ -60,26 +54,6 @@ class MainActivity : AppCompatActivity() {
         viewAccessibiltyTouch.setOnClickListener {
             startActivity(Intent(this, TabbedActivity::class.java))
         }
-    }
-
-    private fun getPackageList() {
-
-        val pkgManager = PackageListManager(this)
-
-        pkgManager.getGrantedPermissions("com.instagram.android")
-
-        //for (pkg in pkgManager.getPackageList())
-          //  Log.e("pack", pkg.applicationInfo.loadLabel(packageManager).toString())
-
-
-        //val perms = packageManager.getPackageInfo("com.whatsapp", PackageManager.GET_PERMISSIONS)
-        /*for (counter in 0 until perms.requestedPermissions.size) {
-            if ((perms.requestedPermissionsFlags[counter] and PackageInfo.REQUESTED_PERMISSION_GRANTED) != 0) {
-                Log.e("perm", perms.requestedPermissions[counter])
-            }
-            //Log.e("eeee", perm.toString())
-        }*/
-        //Log.e("sss", packageManager.queryPermissionsByGroup("android.permission-group.ACTIVITY_RECOGNITION", 0).toString())
     }
 
 }

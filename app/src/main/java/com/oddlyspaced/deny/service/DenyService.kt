@@ -20,6 +20,7 @@ import androidx.core.app.NotificationManagerCompat
 import com.oddlyspaced.deny.util.LogManager
 import com.oddlyspaced.deny.util.PackageListManager
 import com.oddlyspaced.deny.R
+import com.oddlyspaced.deny.util.AppStatusManager
 import java.io.*
 import java.lang.Exception
 
@@ -30,6 +31,7 @@ class DenyService : AccessibilityService() {
     private val tag = "DenyService"
     private lateinit var pkgManager: PackageListManager
     private lateinit var logManager: LogManager
+    private lateinit var appStatusManager: AppStatusManager
     private var packageHome: String = ""
     private val whitelistedPackages = arrayListOf("com.android.systemui", "com.google.android.packageinstaller", "com.android.settings", "com.android.packageinstaller", "com.google.android.permissioncontroller", "com.android.permissioncontroller")
 
@@ -37,6 +39,7 @@ class DenyService : AccessibilityService() {
         Log.d(tag, "Service Connected")
         pkgManager = PackageListManager(applicationContext)
         logManager = LogManager(applicationContext)
+        appStatusManager = AppStatusManager(applicationContext)
         createNotificationChannel()
         // add launcher to ignore list
         val intent = Intent(ACTION_MAIN)
@@ -71,8 +74,9 @@ class DenyService : AccessibilityService() {
             shouldExit = false
             return
         }
-        if (event.packageName == packageHome && packageInContext != "" && File(applicationContext.getExternalFilesDir(null).toString() + "/$packageInContext").exists() && pkgManager.getGrantedGroups(packageInContext).isNotEmpty()) {
+        if (event.packageName == packageHome && packageInContext != "" && File(applicationContext.getExternalFilesDir(null).toString() + "/$packageInContext").exists() && pkgManager.getGrantedGroups(packageInContext).subtract(appStatusManager.read(packageInContext).permissions).isNotEmpty() && revoketemp != packageInContext) {
             Log.e("REVOKE111", packageInContext)
+            Log.e("GRANTEd", packageInContext + ";;;" + pkgManager.getGrantedGroups(packageInContext).toString())
             revoketemp = packageInContext
             notify("Revoking Permissions", "Revoking Permissions from " + pkgManager.getPackageInfo(revoketemp).applicationInfo.loadLabel(applicationContext.packageManager).toString() + " in 3 seconds...")
             Handler().postDelayed({
@@ -80,8 +84,11 @@ class DenyService : AccessibilityService() {
                 val writer = PrintWriter(BufferedWriter(FileWriter(File(applicationContext.getExternalFilesDir(null).toString() + "/revokeperms"))))
                 val pkgManager = PackageListManager(applicationContext)
                 writer.println(revoketemp)
-                for (perm in pkgManager.getGrantedGroups(revoketemp)) {
-                    writer.println(perm)
+                val pp = appStatusManager.read(packageInContext).permissions
+                for (perm in pp) {
+                    if (perm.granted) {
+                        writer.println(perm.perm)
+                    }
                 }
                 writer.close()
                 val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
@@ -163,6 +170,7 @@ class DenyService : AccessibilityService() {
                     isPermissionBeingRevoked = false
                     isOnMainScreen = true
                     shouldExit = true
+                    revoketemp = ""
                 }
             }
             else if (isOnPermissionScreen) {

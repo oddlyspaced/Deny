@@ -17,7 +17,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.oddlyspaced.deny.R
 import com.oddlyspaced.deny.adapter.AppPermissionAdapter
-import com.oddlyspaced.deny.interfaces.PermissionItemClick
 import com.oddlyspaced.deny.modal.AppStatusItem
 import com.oddlyspaced.deny.modal.PermissionItem
 import com.oddlyspaced.deny.util.AppStatusManager
@@ -108,14 +107,9 @@ class PermissionBottomFragment: BottomSheetDialogFragment() {
 
         rvPermissions.setHasFixedSize(true)
         rvPermissions.layoutManager = LinearLayoutManager(context)
-        adapter = AppPermissionAdapter(list, PermissionBottomFragmentClick())
+        adapter = AppPermissionAdapter(list)
         adapter.packageName = packageName
         rvPermissions.adapter = adapter
     }
 
-    class PermissionBottomFragmentClick: PermissionItemClick {
-        override fun onClick(context: Context) {
-            Toast.makeText(context, "yeehaww", Toast.LENGTH_LONG).show()
-        }
-    }
 }

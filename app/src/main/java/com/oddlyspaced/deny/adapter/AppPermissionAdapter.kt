@@ -17,11 +17,10 @@ import com.oddlyspaced.deny.modal.LogItem
 import com.oddlyspaced.deny.util.PackageListManager
 import com.oddlyspaced.deny.R
 import com.oddlyspaced.deny.interfaces.LogItemClick
-import com.oddlyspaced.deny.interfaces.PermissionItemClick
 import com.oddlyspaced.deny.modal.PermissionItem
 import com.oddlyspaced.deny.util.AppStatusManager
 
-class AppPermissionAdapter(val list: ArrayList<PermissionItem>, private val click: PermissionItemClick): RecyclerView.Adapter<AppPermissionAdapter.ViewHolder>() {
+class AppPermissionAdapter(val list: ArrayList<PermissionItem>): RecyclerView.Adapter<AppPermissionAdapter.ViewHolder>() {
 
     private lateinit var context: Context
     private lateinit var appStatusManager: AppStatusManager
@@ -60,7 +59,6 @@ class AppPermissionAdapter(val list: ArrayList<PermissionItem>, private val clic
             val appItem = appStatusManager.read(packageName)
             appItem.permissions = list
             appStatusManager.save(packageName, appItem)
-            click.onClick(context)
         }
     }
 

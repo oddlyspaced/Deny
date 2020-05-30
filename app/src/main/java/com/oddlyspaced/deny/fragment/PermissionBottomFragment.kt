@@ -66,7 +66,15 @@ class PermissionBottomFragment: BottomSheetDialogFragment() {
         pkgManager = PackageListManager(context!!)
         val list = ArrayList<PermissionItem>()
         ///////
-        for (item in pkgManager.getGroups(packageName)) {
+        val listAll = pkgManager.getGroups(packageName)
+        val listGranted = pkgManager.getGrantedGroups(packageName)
+        val listDenied = ArrayList(listAll.subtract(listGranted))
+
+        for (item in listDenied) {
+            list.add(PermissionItem(item, pkgManager.checkGroupNumber(item), false))
+        }
+
+        for (item in listGranted) {
             list.add(PermissionItem(item, pkgManager.checkGroupNumber(item), true))
         }
         rvPermissions.setHasFixedSize(true)

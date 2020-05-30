@@ -48,6 +48,7 @@ class AppPermissionAdapter(private val list: ArrayList<PermissionItem>): Recycle
             10 -> holder.imgPerm.setImageDrawable(context.getDrawable(R.drawable.ic_perm_storage))
             11 -> holder.imgPerm.setImageDrawable(context.getDrawable(R.drawable.ic_perm_telephone))
         }
+        holder.cbPerm.isChecked = item.granted
     }
 
     class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {

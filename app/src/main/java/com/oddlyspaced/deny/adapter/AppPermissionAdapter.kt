@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
+import android.widget.CompoundButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -16,14 +17,19 @@ import com.oddlyspaced.deny.modal.LogItem
 import com.oddlyspaced.deny.util.PackageListManager
 import com.oddlyspaced.deny.R
 import com.oddlyspaced.deny.interfaces.LogItemClick
+import com.oddlyspaced.deny.interfaces.PermissionItemClick
 import com.oddlyspaced.deny.modal.PermissionItem
+import com.oddlyspaced.deny.util.AppStatusManager
 
-class AppPermissionAdapter(private val list: ArrayList<PermissionItem>): RecyclerView.Adapter<AppPermissionAdapter.ViewHolder>() {
+class AppPermissionAdapter(val list: ArrayList<PermissionItem>, private val click: PermissionItemClick): RecyclerView.Adapter<AppPermissionAdapter.ViewHolder>() {
 
     private lateinit var context: Context
+    private lateinit var appStatusManager: AppStatusManager
+    var packageName = ""
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         context = parent.context
+        appStatusManager = AppStatusManager(context)
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_permission, parent, false)
         return ViewHolder(view)
     }
@@ -49,6 +55,13 @@ class AppPermissionAdapter(private val list: ArrayList<PermissionItem>): Recycle
             11 -> holder.imgPerm.setImageDrawable(context.getDrawable(R.drawable.ic_perm_telephone))
         }
         holder.cbPerm.isChecked = item.granted
+        holder.cbPerm.setOnCheckedChangeListener { _: CompoundButton, checked: Boolean ->
+            list[position] = PermissionItem(item.perm, item.permNum, checked)
+            val appItem = appStatusManager.read(packageName)
+            appItem.permissions = list
+            appStatusManager.save(packageName, appItem)
+            click.onClick(context)
+        }
     }
 
     class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {

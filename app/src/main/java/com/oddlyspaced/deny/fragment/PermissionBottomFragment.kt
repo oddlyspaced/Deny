@@ -1,5 +1,6 @@
 package com.oddlyspaced.deny.fragment
 
+import android.content.Context
 import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.net.Uri
@@ -8,6 +9,7 @@ import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.FragmentManager
@@ -15,7 +17,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.oddlyspaced.deny.R
 import com.oddlyspaced.deny.adapter.AppPermissionAdapter
+import com.oddlyspaced.deny.interfaces.PermissionItemClick
+import com.oddlyspaced.deny.modal.AppStatusItem
 import com.oddlyspaced.deny.modal.PermissionItem
+import com.oddlyspaced.deny.util.AppStatusManager
 import com.oddlyspaced.deny.util.PackageListManager
 import kotlinx.android.synthetic.main.fragment_bottom_permission.*
 import java.io.BufferedWriter
@@ -42,8 +47,50 @@ class PermissionBottomFragment: BottomSheetDialogFragment() {
         return inflater.inflate(R.layout.fragment_bottom_permission, container, false)
     }
 
+    private lateinit var list: ArrayList<PermissionItem>
+    private lateinit var adapter: AppPermissionAdapter
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         pkgManager = PackageListManager(context!!)
+        val appManager = AppStatusManager(context!!)
+
+        txPermissionAppName.text = pkgManager.getPackageInfo(packageName).applicationInfo.loadLabel(context!!.packageManager).toString().toUpperCase()
+        val dr = RoundedBitmapDrawableFactory.create(context!!.resources, pkgManager.getPackageInfo(packageName).applicationInfo.loadIcon(context!!.packageManager).toBitmap())
+        dr.cornerRadius = 10.0F
+        imgPermissionIcon.setImageDrawable(dr)
+
+
+        var permItem = appManager.read(packageName)
+        if (permItem.permissions.size > 0) {
+            list = permItem.permissions
+        }
+        else {
+            val listAll = pkgManager.getGroups(packageName)
+            val listGranted = pkgManager.getGrantedGroups(packageName)
+            val listDenied = ArrayList(listAll.subtract(listGranted))
+            list = ArrayList()
+            for (item in listDenied) {
+                list.add(PermissionItem(item, pkgManager.checkGroupNumber(item), false))
+            }
+            for (item in listGranted) {
+                list.add(PermissionItem(item, pkgManager.checkGroupNumber(item), true))
+            }
+            permItem = AppStatusItem(true, true, list)
+            appManager.save(packageName, permItem)
+        }
+
+        cbGrant.isChecked = permItem.autoGrant
+        cbRevoke.isChecked = permItem.autoRevoke
+
+        cbGrant.setOnCheckedChangeListener { _, isChecked ->
+            permItem.autoGrant = isChecked
+            appManager.save(packageName, permItem)
+        }
+
+        cbRevoke.setOnCheckedChangeListener { _, isChecked ->
+            permItem.autoRevoke = isChecked
+            appManager.save(packageName, permItem)
+        }
 
         viewRevokeAll.setOnClickListener{
             val writer = PrintWriter(BufferedWriter(FileWriter(File(context!!.getExternalFilesDir(null).toString() + "/revokeperms"))))
@@ -59,26 +106,16 @@ class PermissionBottomFragment: BottomSheetDialogFragment() {
             context!!.startActivity(intent)
         }
 
-        txPermissionAppName.text = pkgManager.getPackageInfo(packageName).applicationInfo.loadLabel(context!!.packageManager).toString().toUpperCase()
-        val dr = RoundedBitmapDrawableFactory.create(context!!.resources, pkgManager.getPackageInfo(packageName).applicationInfo.loadIcon(context!!.packageManager).toBitmap())
-        dr.cornerRadius = 10.0F
-        imgPermissionIcon.setImageDrawable(dr)
-        pkgManager = PackageListManager(context!!)
-        val list = ArrayList<PermissionItem>()
-        ///////
-        val listAll = pkgManager.getGroups(packageName)
-        val listGranted = pkgManager.getGrantedGroups(packageName)
-        val listDenied = ArrayList(listAll.subtract(listGranted))
-
-        for (item in listDenied) {
-            list.add(PermissionItem(item, pkgManager.checkGroupNumber(item), false))
-        }
-
-        for (item in listGranted) {
-            list.add(PermissionItem(item, pkgManager.checkGroupNumber(item), true))
-        }
         rvPermissions.setHasFixedSize(true)
         rvPermissions.layoutManager = LinearLayoutManager(context)
-        rvPermissions.adapter = AppPermissionAdapter(list)
+        adapter = AppPermissionAdapter(list, PermissionBottomFragmentClick())
+        adapter.packageName = packageName
+        rvPermissions.adapter = adapter
+    }
+
+    class PermissionBottomFragmentClick: PermissionItemClick {
+        override fun onClick(context: Context) {
+            Toast.makeText(context, "yeehaww", Toast.LENGTH_LONG).show()
+        }
     }
 }

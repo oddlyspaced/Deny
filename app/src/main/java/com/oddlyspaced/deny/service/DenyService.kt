@@ -8,7 +8,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.Intent.ACTION_MAIN
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Handler
+import android.provider.Settings
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
@@ -28,6 +30,7 @@ class DenyService : AccessibilityService() {
     private val tag = "DenyService"
     private lateinit var pkgManager: PackageListManager
     private lateinit var logManager: LogManager
+    private var packageHome: String = ""
     private val whitelistedPackages = arrayListOf("com.android.systemui", "com.google.android.packageinstaller", "com.android.settings", "com.android.packageinstaller", "com.google.android.permissioncontroller", "com.android.permissioncontroller")
 
     override fun onServiceConnected() {
@@ -39,8 +42,8 @@ class DenyService : AccessibilityService() {
         val intent = Intent(ACTION_MAIN)
         intent.addCategory(Intent.CATEGORY_HOME);
         val resolveInfo = packageManager.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY)
-        val currentLauncherPackage= resolveInfo?.activityInfo?.packageName
-        whitelistedPackages.add(currentLauncherPackage!!)
+        packageHome = resolveInfo?.activityInfo?.packageName!!
+        whitelistedPackages.add(packageHome)
     }
 
     override fun onInterrupt() {
@@ -53,6 +56,7 @@ class DenyService : AccessibilityService() {
     private var permissionsToRevoke = ArrayList<String>()
     private var packageRevoked = ""
     private var shouldExit = false
+    private var revoketemp = ""
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         // Log.e("ttt", packageInContext)
@@ -61,12 +65,30 @@ class DenyService : AccessibilityService() {
         // ignore notification and toast
         if (event.parcelableData is Notification || event.parcelableData is Toast)
             return
-        if (shouldExit) {
+        if (shouldExit && event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
             Log.e("EXYE", "EEEEE")
-            event.source.refresh()
-            performGlobalAction(GLOBAL_ACTION_BACK)
+            performGlobalAction(GLOBAL_ACTION_HOME)
             shouldExit = false
             return
+        }
+        if (event.packageName == packageHome && packageInContext != "" && File(applicationContext.getExternalFilesDir(null).toString() + "/$packageInContext").exists() && pkgManager.getGrantedGroups(packageInContext).isNotEmpty()) {
+            Log.e("REVOKE111", packageInContext)
+            revoketemp = packageInContext
+            notify("Revoking Permissions", "Revoking Permissions from " + pkgManager.getPackageInfo(revoketemp).applicationInfo.loadLabel(applicationContext.packageManager).toString() + " in 3 seconds...")
+            Handler().postDelayed({
+                notify("Revoking", "Revoking Permissions from " + pkgManager.getPackageInfo(revoketemp).applicationInfo.loadLabel(applicationContext.packageManager).toString() + " now")
+                val writer = PrintWriter(BufferedWriter(FileWriter(File(applicationContext.getExternalFilesDir(null).toString() + "/revokeperms"))))
+                val pkgManager = PackageListManager(applicationContext)
+                writer.println(revoketemp)
+                for (perm in pkgManager.getGrantedGroups(revoketemp)) {
+                    writer.println(perm)
+                }
+                writer.close()
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                intent.data = (Uri.parse("package:$revoketemp"))
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                applicationContext.startActivity(intent)
+            }, 3000)
         }
         if (whitelistedPackages.contains(event.packageName.toString())) {
             // revoke perms
@@ -168,12 +190,16 @@ class DenyService : AccessibilityService() {
             try {
                 val pp = pkgManager.getGrantedPermissions(packageInContext)
                 if (pp != grantedPermissions) {
-                    Log.e("diff", pp.subtract(grantedPermissions).toString())
-                    val diff = pp.subtract(grantedPermissions).toList()[0]
-                    val permGroup = pkgManager.checkPermGroup(diff)
-                    createNotification(permGroup)
-                    logManager.addLog(1, packageInContext, permGroup)
-                    grantedPermissions = pp
+                    val diff = pp.subtract(grantedPermissions).toList()
+                    if (diff.isNotEmpty()) {
+                        val item = diff[0]
+                        val permGroup = pkgManager.checkPermGroup(item)
+                        Log.e("diff", pp.subtract(grantedPermissions).toString())
+
+                        createNotification(permGroup)
+                        logManager.addLog(1, packageInContext, permGroup)
+                        grantedPermissions = pp
+                    }
                 }
             } catch (e: Exception) {
                 Log.e("Error", e.toString())
@@ -220,6 +246,21 @@ class DenyService : AccessibilityService() {
         with(NotificationManagerCompat.from(this)) {
             // notificationId is a unique int for each notification that you must define
             notify(permission, builder.build())
+        }
+    }
+
+    private fun notify(title: String, text: String) {
+        val builder = NotificationCompat.Builder(this, notificationChannelId)
+            .setSmallIcon(R.drawable.ic_perm_body_sensors)
+            .setContentTitle(title)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(text))
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setAutoCancel(true)
+            .setWhen(System.currentTimeMillis())
+
+        with(NotificationManagerCompat.from(this)) {
+            // notificationId is a unique int for each notification that you must define
+            notify(1, builder.build())
         }
     }
 
